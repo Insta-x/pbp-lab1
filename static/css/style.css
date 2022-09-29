@@ -1,11 +1,11 @@
-table, tr, td, th {
-    border: 2px solid rgb(255, 0, 0);
+table {
+    border: 2px solid black;
 }
 
-h5 {
-    font-size: small;
+table th {
+    border: 2px solid black;
 }
 
-button {
-    color: blueviolet;
+table td {
+    border: 2px solid black;
 }
