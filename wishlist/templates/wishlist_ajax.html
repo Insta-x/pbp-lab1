@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block logout %}
+<button class="btn btn-sm btn-outline-secondary"><a class="nav-link active text-white" aria-current="page" href="{% url 'wishlist:logout' %}">Logout</a></button>
+{% endblock logout %}
+
+{% block meta %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        get_data();
+        $( "form#create-form" ).submit(function( event ) {
+            // alert( "Handler for .submit() called." );
+            event.preventDefault();
+
+            var actionurl = event.currentTarget.action;
+
+            $.ajax({
+                    url: actionurl,
+                    type: 'post',
+                    dataType: 'json',
+                    data: $("form#create-form").serialize(),
+                    success: function(data) {
+                        var tr = $("<tr></tr>");
+                        for (const [key, value] of Object.entries(data)) {
+                            var td = $("<td></td>").html(value);
+                            tr.append(td);
+                        }
+                        $("#wishlist-table").append(tr);
+                    },
+                    error: function(){
+                        alert("ERROR");
+                    }
+            });
+        });
+    });
+
+    function get_data() {
+        $.get("../json", function(data) {
+            data.forEach(element => {
+                var tr = $("<tr></tr>");
+                for (const [key, value] of Object.entries(element.fields)) {
+                    var td = $("<td></td>").html(value);
+                    tr.append(td);
+                }
+                $("#wishlist-table").append(tr);
+            });
+        });
+    }
+</script>
+{% endblock meta %}
+
+{% block content %}
+
+<h5>Nama: </h5>
+<p>{{nama}}</p>
+
+<table id="wishlist-table">
+    <tr>
+    <th>Nama Barang</th>
+    <th>Harga Barang</th>
+    <th>Deskripsi</th>
+    </tr>
+</table>
+
+<form method="POST" action="./submit/" id="create-form" class="m-5">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <td>Nama Barang: </td>
+            <td><input type="text" name="item-name" maxlength="50" placeholder="Nama Barang" class="form-control"></td>
+        </tr>
+                
+        <tr>
+            <td>Harga Barang: </td>
+            <td><input type="number" name="item-price" placeholder="Harga Barang" class="form-control"></td>
+        </tr>
+
+        <tr>
+            <td>Deskripsi: </td>
+            <td><input type="text" name="item-description" placeholder="Deskripsi" class="form-control"></td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td><input id="create-submit" class="btn btn-primary login_btn" type="submit" value="Submit"></td>
+        </tr>
+    </table>
+</form>
+
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+<button class="btn btn-sm btn-outline-secondary"><a href="{% url 'wishlist:logout' %}">Logout</a></button>
+
+{% endblock content %}
